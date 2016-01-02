@@ -1,0 +1,19 @@
+[ui]
+username = nshikawan<koichiro.nishikawa@beproud.jp>
+
+[extensions]
+color =
+graphlog =
+
+[alias]
+bn = log --template '{branch}\n'
+
+[color]
+mode = ansi
+
+[hooks]
+update = find . -name '*.pyc' -delete
+
+[revsetalias]
+p($1) = parents(min(branch($1)))
+
