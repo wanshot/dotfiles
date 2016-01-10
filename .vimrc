@@ -54,10 +54,8 @@ if has("autocmd")
   autocmd MyAutoCmd FileType html       setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType htmldjango setlocal sw=2 sts=2 ts=2 et
-  autocmd MyAutoCmd FileType perl       setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType python     setlocal sw=4 sts=4 ts=4 et omnifunc=jedi#completions completeopt-=preview
-  autocmd MyAutoCmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
-  autocmd MyAutoCmd FileType haml       setlocal sw=2 sts=2 ts=2 et
+  autocmd MyAutoCmd FileType haskell    setlocal sw=2 sts=2 ts=2 et omnifunc=necoghc#omnifunc
   autocmd MyAutoCmd FileType sh         setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType sql        setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType vim        setlocal sw=2 sts=2 ts=2 et
@@ -128,7 +126,7 @@ set autoindent
 "set expandtab
 "set shiftwidth=4
 set smartindent  " 新しい行を開始したときに、新しい行のインデントを現在行と同じ量にする。
-set cindent      " Cプログラムファイルの自動インデントを始める 
+set cindent      " Cプログラムファイルの自動インデントを始める
 set number
 set ignorecase          " 大文字小文字を区別しない
 set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
@@ -490,16 +488,6 @@ let g:neocomplete#text_mode_filetypes = {
 
 NeoBundle 'phleet/vim-mercenary'
 
-NeoBundleLazy 'sgur/vim-gitgutter', {
-  \ 'autoload': {
-  \   'commands': ['GitGutterToggle', 'GitGutterLineHighlightsToggle'],
-  \ }}
-nnoremap <silent> ,gg :<C-u>GitGutterToggle<CR>
-nnoremap <silent> ,gh :<C-u>GitGutterLineHighlightsToggle<CR>
-let g:gitgutter_system_function       = 'vimproc#system'
-let g:gitgutter_system_error_function = 'vimproc#get_last_status'
-let g:gitgutter_shellescape_function  = 'vimproc#shellescape'
-
 NeoBundle 'Shougo/neosnippet.vim'
 let g:neosnippet#snippets_directory='~/.vim/snippets'
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -514,6 +502,56 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 let g:neosnippet#disable_runtime_snippets = {
   \   '_' : 1,
   \ }
+
+NeoBundle 'ujihisa/repl.vim'
+
+NeoBundleLazy 'thinca/vim-ref', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
+
+NeoBundleLazy 'itchyny/vim-haskell-indent', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
+
+NeoBundleLazy 'eagletmt/ghcmod-vim', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
+
+if '' !=# matchstr(expand('%:t'), '\.*\.hs$')
+  augroup ghcmodcheck
+    autocmd!
+    autocmd MyAutoCmd BufWritePost <buffer> GhcModCheckAsync
+  augroup END
+endif
+
+
+NeoBundleLazy 'eagletmt/neco-ghc', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
+let g:haskellmode_completion_ghc = 0
+" 型情報を表示
+let g:necoghc_enable_detailed_browse = 1
+
+NeoBundleLazy 'ujihisa/ref-hoogle', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
+nnoremap <silent> [unite]h :<C-u>Unite haskellimport<CR>
+
+NeoBundleLazy 'ujihisa/unite-haskellimport', {
+    \ 'autoload' : {
+    \     'filetypes' : 'haskell',
+    \    },
+    \ }
 
 NeoBundleLazy 'Rip-Rip/clang_complete', {
     \ 'autoload' : {

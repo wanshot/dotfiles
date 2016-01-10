@@ -18,6 +18,18 @@ alias view=/Applications/MacVim.app/Contents/MacOS/view
 export LESS='-R'
 export LESSOPEN='| /usr/local/bin/src-hilite-lesspipe.sh %s'
 
+
+## Haskell alias
+alias ghc="stack ghc --"
+alias ghci="stack ghci"
+alias runghc="stack runghc --"
+alias runhaskell="stack runghc --"
+
+export PATH=$HOME/.stack/programs/x86_64-osx/ghc-7.10.3/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.stack/global-project/.stack-work/install/x86_64-osx/lts-3.20/7.10.2/bin:$PATH
+
+
 ########################################
 # 環境変数
 export LANG=ja_JP.UTF-8
@@ -43,9 +55,6 @@ SAVEHIST=1000000
 # ^[はVimでinnsertmodeでShift-v,esc
 PROMPT="🍣 %{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
 %# %{[0m%}"
-
-
-
 
 
 # 単語の区切り文字を指定する

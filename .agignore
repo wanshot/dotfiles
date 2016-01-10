@@ -1,0 +1,5 @@
+.git
+.hg
+*.egg
+*.egg-info
+yankring_history_v2.txt
