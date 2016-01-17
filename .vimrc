@@ -68,8 +68,8 @@ endif
 
 
 " syntax match Number /-\sA$/
-syn match BS '\v(cp932)'
-hi def link BS StorageClass
+" syn match BS '\v(cp932)'
+" hi def link BS StorageClass
 " autocmd MyAutoCmd ColorScheme * highlight  pythonCommenc ctermfg=196 cterm=italic
 
 noremap <Up> <Nop>
@@ -245,6 +245,7 @@ let g:EasyMotion_space_jump_first = 1
 nmap g/ <Plug>(easymotion-sn)
 xmap g/ <Plug>(easymotion-sn)
 omap g/ <Plug>(easymotion-tn)
+
 
 NeoBundle 'Shougo/vimproc', {
   \ 'build' : {
