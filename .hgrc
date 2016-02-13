@@ -1,9 +1,20 @@
 [ui]
-username = nshikawan<koichiro.nishikawa@beproud.jp>
+username = wan
 
 [extensions]
 color =
 graphlog =
+shelve=
+pager =
+transplant=
+purge =
+
+[pager]
+pager = LESS='-R' less
+
+[pager]
+quiet = True
+attend = help, diff, log, glog
 
 [alias]
 bn = log --template '{branch}\n'
@@ -17,3 +28,8 @@ update = find . -name '*.pyc' -delete
 [revsetalias]
 p($1) = parents(min(branch($1)))
 
+[merge-tools]
+splice.executable = vim
+splice.args = -f $base $local $other $output -c 'SpliceInit'
+splice.premerge = keep
+splice.priority = 1

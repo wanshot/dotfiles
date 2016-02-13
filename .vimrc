@@ -64,8 +64,8 @@ if has("autocmd")
   autocmd MyAutoCmd FileType yaml       setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType rst        setlocal sw=3 sts=3 ts=3 et
+  autocmd MyAutoCmd FileType jade       setlocal sw=4 sts=4 ts=4 et
 endif
-
 
 " syntax match Number /-\sA$/
 " syn match BS '\v(cp932)'
@@ -202,16 +202,21 @@ noremap <Leader>f   <C-f>
 noremap <Leader>a   ^
 noremap <Leader>l   $
 
-" VimDiff設定
-map dl :diffg 2<CR>:diffupdate<CR>]czz
-map do :diffg 3<CR>:diffupdate<CR>]czz
-map dp :diffp 1<CR>:diffupdate<CR>]czz
-
 cmap w!! w !sudo tee > /dev/null %
 
 "先頭行にPythonの定型文追加
 command! Header call append(0, "# -*- coding: utf-8 -*-")
 nnoremap <Leader>h :Header<CR>
+
+command! CallLogger call append(1, "import logging")
+nnoremap <Leader>h :Calllogger<CR>
+
+" Python　logger
+function! s:logger(level)
+  call append(1, "import logging")
+  call append(2, "logger = logging.getLogger('" . a:level . "')")
+endfunction
+command! -nargs=1 Log call s:logger(<f-args>)
 
 filetype off
 
@@ -231,8 +236,8 @@ vmap <Leader>c <Plug>(caw:I:toggle)
 
 NeoBundle 'easymotion/vim-easymotion'
 let g:EasyMotion_do_mapping = 0
-nmap , <Plug>(easymotion-s2)
-xmap , <Plug>(easymotion-s2)
+nmap ; <Plug>(easymotion-s2)
+xmap ; <Plug>(easymotion-s2)
 omap z <Plug>(easymotion-s2)
 let g:EasyMotion_smartcase = 1
 map <Leader>j <Plug>(easymotion-j)
@@ -242,9 +247,9 @@ let g:EasyMotion_keys = 'QAZWSXEDCFGYHNUJMIKOLP'
 let g:EasyMotion_use_upper = 1
 let g:EasyMotion_enter_jump_first = 1
 let g:EasyMotion_space_jump_first = 1
-nmap g/ <Plug>(easymotion-sn)
-xmap g/ <Plug>(easymotion-sn)
-omap g/ <Plug>(easymotion-tn)
+nmap / <Plug>(easymotion-sn)
+xmap / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
 
 
 NeoBundle 'Shougo/vimproc', {
@@ -257,14 +262,14 @@ NeoBundle 'Shougo/vimproc', {
   \    },
   \ }
 
-NeoBundleLazy 'Shougo/vimshell.vim'
-  let g:vimshell_interactive_encodings = {
-    \ '/':'utf-8-mac',
-    \ }
-  let g:vimshell_prompt = "% "
-  let g:vimshell_user_prompt = 'iconv(fnamemodify(getcwd(), ":~"), "utf-8-mac", "char")'
-  let g:vimshell_right_prompt = 'vcs#info("(%s)-[ %b ]")'
-nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR> "vimshell"
+" NeoBundleLazy 'Shougo/vimshell.vim'
+"   let g:vimshell_interactive_encodings = {
+"     \ '/':'utf-8-mac',
+"     \ }
+"   let g:vimshell_prompt = "% "
+"   let g:vimshell_user_prompt = 'iconv(fnamemodify(getcwd(), ":~"), "utf-8-mac", "char")'
+"   let g:vimshell_right_prompt = 'vcs#info("(%s)-[ %b ]")'
+" nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR> "vimshell"
 
 NeoBundleLazy 'Shougo/neocomplete.vim', {
   \ 'depends' : 'Shougo/vimproc',
@@ -504,7 +509,11 @@ let g:neosnippet#disable_runtime_snippets = {
   \   '_' : 1,
   \ }
 
-NeoBundle 'ujihisa/repl.vim'
+NeoBundleLazy 'digitaltoad/vim-jade', {
+    \ 'autoload' : {
+    \     'filetypes' : 'jade',
+    \    },
+    \ }
 
 NeoBundleLazy 'thinca/vim-ref', {
     \ 'autoload' : {
@@ -560,6 +569,12 @@ NeoBundleLazy 'Rip-Rip/clang_complete', {
     \    },
     \ }
 
+NeoBundle 'sjl/splice.vim'
+let g:splice_initial_mode = 'grid'
+let g:splice_initial_layout_grid = 1
+let g:splice_initial_diff_grid = 1
+let g:splice_initial_scrollbind_grid = 0
+let g:splice_wrap = 'nowrap'
 
 " NeoBundleLazy 'majutsushi/tagbar', {
 "   \ 'autload': {
@@ -654,18 +669,18 @@ endfunction
 
 "NeoBundle 'vim-scripts/vim-quick-radon'
 "NeoBundle 'vim-pyprofiler'
-NeoBundle 'wanshot/vim-bugspots'
+" NeoBundle 'wanshot/vim-bugspots'
 
 
-NeoBundleLazy "wanshot/vim-table-builder", {
-  \ 'autoload': {
-  \   'commands': ['TableModeToggle'],
-  \ }}
-nmap <Leader>tb :TableModeToggle<CR>
-let g:table_mode_corner_corner="+"
-let g:table_mode_header_fillchar="="
+" NeoBundleLazy 'wanshot/vim-table-builder', {
+"   \ 'autoload': {
+"   \   'commands': ['TableModeToggle'],
+"   \ }}
+" nmap <Leader>tb :TableModeToggle<CR>
+" let g:table_mode_corner_corner="+"
+" let g:table_mode_header_fillchar="="
 
-NeoBundle "vim-slack-client"
+" NeoBundle 'vim-slack-client'
 
 " if has('persistent_undo')
 "   set undodir=/Users/wan/.vim/undo_history
@@ -675,17 +690,17 @@ NeoBundle "vim-slack-client"
 "   augroup END
 " endif
 " とりあえず今は必要なし
-NeoBundleLazy 'wanshot/gundo.vim', {
-  \ 'autoload': {
-  \   'commands': ['GundoToggle'],
-  \ }}
-" let g:gundo_auto_preview = 0
-" 遅いので差分をプレビューしない
-nnoremap <Leader>z :GundoToggle<CR>
+" NeoBundleLazy 'wanshot/gundo.vim', {
+"   \ 'autoload': {
+"   \   'commands': ['GundoToggle'],
+"   \ }}
+" " let g:gundo_auto_preview = 0
+" " 遅いので差分をプレビューしない
+" nnoremap <Leader>z :GundoToggle<CR>
 "vimでag検索 Unite vimを使用する為廃止
 "NeoBundle 'rking/ag.vim'
-NeoBundle "vim-gundo-support"
-let g:UndoFolder="/Users/wan/tmp"
+" NeoBundle 'vim-gundo-support'
+" let g:UndoFolder="/Users/wan/tmp"
 
 NeoBundleSaveCache  " キャッシュの書込み
 call neobundle#end()
@@ -775,6 +790,7 @@ function! s:get_syn_attr(synid)
         \ "guifg": guifg,
         \ "guibg": guibg}
 endfunction
+
 function! s:get_syn_info()
   let baseSyn = s:get_syn_attr(s:get_syn_id(0))
   echo "name: " . baseSyn.name .
