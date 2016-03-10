@@ -208,7 +208,7 @@ cmap w!! w !sudo tee > /dev/null %
 command! Header call append(0, "# -*- coding: utf-8 -*-")
 nnoremap <Leader>h :Header<CR>
 
-command! CallLogger call append(1, "import logging")
+command! CallLogger call s:logger
 nnoremap <Leader>h :Calllogger<CR>
 
 " Python　logger
@@ -261,15 +261,6 @@ NeoBundle 'Shougo/vimproc', {
   \   'unix' : 'gmake',
   \    },
   \ }
-
-" NeoBundleLazy 'Shougo/vimshell.vim'
-"   let g:vimshell_interactive_encodings = {
-"     \ '/':'utf-8-mac',
-"     \ }
-"   let g:vimshell_prompt = "% "
-"   let g:vimshell_user_prompt = 'iconv(fnamemodify(getcwd(), ":~"), "utf-8-mac", "char")'
-"   let g:vimshell_right_prompt = 'vcs#info("(%s)-[ %b ]")'
-" nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR> "vimshell"
 
 NeoBundleLazy 'Shougo/neocomplete.vim', {
   \ 'depends' : 'Shougo/vimproc',
@@ -326,7 +317,6 @@ NeoBundle "tpope/vim-surround"
 nmap <Leader>" ysiw"
 nmap <Leader>' ysiw'
 
-NeoBundle 'vim-scripts/Align'
 
 NeoBundle 'vim-scripts/YankRing.vim'
 
@@ -492,7 +482,7 @@ let g:neocomplete#text_mode_filetypes = {
       \ 'python': 1,
       \ }
 
-NeoBundle 'phleet/vim-mercenary'
+NeoBundle 'wanshot/vim-mercenary'
 
 NeoBundle 'Shougo/neosnippet.vim'
 let g:neosnippet#snippets_directory='~/.vim/snippets'
@@ -533,12 +523,12 @@ NeoBundleLazy 'eagletmt/ghcmod-vim', {
     \    },
     \ }
 
-if '' !=# matchstr(expand('%:t'), '\.*\.hs$')
-  augroup ghcmodcheck
-    autocmd!
-    autocmd MyAutoCmd BufWritePost <buffer> GhcModCheckAsync
-  augroup END
-endif
+" if '' !=# matchstr(expand('%:t'), '\.*\.hs$')
+"   augroup ghcmodcheck
+"     autocmd!
+"     autocmd MyAutoCmd BufWritePost <buffer> GhcModCheckAsync
+"   augroup END
+" endif
 
 
 NeoBundleLazy 'eagletmt/neco-ghc', {
@@ -575,15 +565,6 @@ let g:splice_initial_layout_grid = 1
 let g:splice_initial_diff_grid = 1
 let g:splice_initial_scrollbind_grid = 0
 let g:splice_wrap = 'nowrap'
-
-" NeoBundleLazy 'majutsushi/tagbar', {
-"   \ 'autload': {
-"   \   'commands': ['TagbarToggle'],
-"   \ },
-"   \ 'build': {
-"   \   'mac': 'brew install ctags',
-"   \ }}
-" nmap <Leader>t :TagbarToggle<CR>
 
 colorschem molokai
 " colorschem dracula
@@ -717,96 +698,96 @@ let s:option_parse = {
       \}
 
 
-function! CsvTableDirective() range
-  for num in range(a:firstline, a:lastline)
-    if "" !=# matchstr(getline(num), '\v^csvtable\s*.*')
-      let end = num + 1
-      while "" !=# getline(end)
-        let end += 1
-      endwhile
-      let csv_name = matchstr(getline(num), '\v^csvtable\s\zs.*')
-      if csv_name == ""
-        let csv_line = ".. csv-table::"
-      else
-        let csv_line = ".. csv-table:: " . csv_name
-      endif
-      let repl = substitute(getline(num), getline(num), csv_line, "g")
-      call setline(num, repl)
-      for n in range(num+1, end)
-        if "" !=# matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
-          let opt = matchstr(getline(n), '\v^-\zs\a\ze')
-          let args = matchstr(getline(n), '\v^-\a\s+\zs.*(,|.)*')
-          let convert_line = s:option_parse.table_option(opt, args)
-          call setline(n, convert_line)
-          let n += 1
-          if "" == matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
-            call append(n-1, "")
-          endif
-        endif
-        if "" !=# matchstr(getline(n+1), '\v^\S+(.|,)*.$')
-          let line = '   '
-          let column_list = split(getline(n+1), ",")
-          for column in column_list
-            let line = line . '"' . column . '"' . ', '
-          endfor
-          let content_line = line[:-3]
-          call setline(n+1, content_line)
-        endif
-      endfor
-    endif
-  endfor
-endfunction
-
-function! s:option_parse.table_option(opt, args) dict
-  let line = eval("self." . a:opt)
-  let column_list = split(a:args, ",")
-  for column in column_list
-    let line = line . column . ', '
-  endfor
-  return line[:-3]
-endfunction
-
-
-"get syntax info
-"http://cohama.hateblo.jp/entry/2013/08/11/020849
-function! s:get_syn_id(transparent)
-  let synid = synID(line("."), col("."), 1)
-  if a:transparent
-    return synIDtrans(synid)
-  else
-    return synid
-  endif
-endfunction
-function! s:get_syn_attr(synid)
-  let name = synIDattr(a:synid, "name")
-  let ctermfg = synIDattr(a:synid, "fg", "cterm")
-  let ctermbg = synIDattr(a:synid, "bg", "cterm")
-  let guifg = synIDattr(a:synid, "fg", "gui")
-  let guibg = synIDattr(a:synid, "bg", "gui")
-  return {
-        \ "name": name,
-        \ "ctermfg": ctermfg,
-        \ "ctermbg": ctermbg,
-        \ "guifg": guifg,
-        \ "guibg": guibg}
-endfunction
-
-function! s:get_syn_info()
-  let baseSyn = s:get_syn_attr(s:get_syn_id(0))
-  echo "name: " . baseSyn.name .
-        \ " ctermfg: " . baseSyn.ctermfg .
-        \ " ctermbg: " . baseSyn.ctermbg .
-        \ " guifg: " . baseSyn.guifg .
-        \ " guibg: " . baseSyn.guibg
-  let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
-  echo "link to"
-  echo "name: " . linkedSyn.name .
-        \ " ctermfg: " . linkedSyn.ctermfg .
-        \ " ctermbg: " . linkedSyn.ctermbg .
-        \ " guifg: " . linkedSyn.guifg .
-        \ " guibg: " . linkedSyn.guibg
-endfunction
-command! SyntaxInfo call s:get_syn_info()
+" function! CsvTableDirective() range
+"   for num in range(a:firstline, a:lastline)
+"     if "" !=# matchstr(getline(num), '\v^csvtable\s*.*')
+"       let end = num + 1
+"       while "" !=# getline(end)
+"         let end += 1
+"       endwhile
+"       let csv_name = matchstr(getline(num), '\v^csvtable\s\zs.*')
+"       if csv_name == ""
+"         let csv_line = ".. csv-table::"
+"       else
+"         let csv_line = ".. csv-table:: " . csv_name
+"       endif
+"       let repl = substitute(getline(num), getline(num), csv_line, "g")
+"       call setline(num, repl)
+"       for n in range(num+1, end)
+"         if "" !=# matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
+"           let opt = matchstr(getline(n), '\v^-\zs\a\ze')
+"           let args = matchstr(getline(n), '\v^-\a\s+\zs.*(,|.)*')
+"           let convert_line = s:option_parse.table_option(opt, args)
+"           call setline(n, convert_line)
+"           let n += 1
+"           if "" == matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
+"             call append(n-1, "")
+"           endif
+"         endif
+"         if "" !=# matchstr(getline(n+1), '\v^\S+(.|,)*.$')
+"           let line = '   '
+"           let column_list = split(getline(n+1), ",")
+"           for column in column_list
+"             let line = line . '"' . column . '"' . ', '
+"           endfor
+"           let content_line = line[:-3]
+"           call setline(n+1, content_line)
+"         endif
+"       endfor
+"     endif
+"   endfor
+" endfunction
+"
+" function! s:option_parse.table_option(opt, args) dict
+"   let line = eval("self." . a:opt)
+"   let column_list = split(a:args, ",")
+"   for column in column_list
+"     let line = line . column . ', '
+"   endfor
+"   return line[:-3]
+" endfunction
+"
+"
+" "get syntax info
+" "http://cohama.hateblo.jp/entry/2013/08/11/020849
+" function! s:get_syn_id(transparent)
+"   let synid = synID(line("."), col("."), 1)
+"   if a:transparent
+"     return synIDtrans(synid)
+"   else
+"     return synid
+"   endif
+" endfunction
+" function! s:get_syn_attr(synid)
+"   let name = synIDattr(a:synid, "name")
+"   let ctermfg = synIDattr(a:synid, "fg", "cterm")
+"   let ctermbg = synIDattr(a:synid, "bg", "cterm")
+"   let guifg = synIDattr(a:synid, "fg", "gui")
+"   let guibg = synIDattr(a:synid, "bg", "gui")
+"   return {
+"         \ "name": name,
+"         \ "ctermfg": ctermfg,
+"         \ "ctermbg": ctermbg,
+"         \ "guifg": guifg,
+"         \ "guibg": guibg}
+" endfunction
+"
+" function! s:get_syn_info()
+"   let baseSyn = s:get_syn_attr(s:get_syn_id(0))
+"   echo "name: " . baseSyn.name .
+"         \ " ctermfg: " . baseSyn.ctermfg .
+"         \ " ctermbg: " . baseSyn.ctermbg .
+"         \ " guifg: " . baseSyn.guifg .
+"         \ " guibg: " . baseSyn.guibg
+"   let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
+"   echo "link to"
+"   echo "name: " . linkedSyn.name .
+"         \ " ctermfg: " . linkedSyn.ctermfg .
+"         \ " ctermbg: " . linkedSyn.ctermbg .
+"         \ " guifg: " . linkedSyn.guifg .
+"         \ " guibg: " . linkedSyn.guibg
+" endfunction
+" command! SyntaxInfo call s:get_syn_info()
 
 "http://d.hatena.ne.jp/thinca/20090530/1243615055
 "cursorlineを必要な時にだけ有効にする
