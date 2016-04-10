@@ -38,18 +38,12 @@ endif
 
 set tabstop=2 shiftwidth=2 softtabstop=0
 
+
 if has("autocmd")
   filetype plugin on
   filetype indent on
-"   highlight rightMargin term=bold ctermfg=174 guifg=blue
-"   autocmd MyAutoCmd ColorScheme * match rightMargin /""".*{-}"""/
-"   autocmd MyAutoCmd hi def link rightMargin String
-"   autocmd MyAutoCmd syntax match pyComment /\cp932\/ display
-"   autocmd MyAutoCmd syntax match howmIgnore contained "\＊"
-"   autocmd MyAutoCmd hi def link howmString String
-"   autocmd MyAutoCmd hi def link howmIgnore Ignore
-"   autocmd MyAutoCmd ColorScheme * highlight  pythonString ctermfg=196 cterm=italic
   autocmd MyAutoCmd FileType css        setlocal sw=2 sts=2 ts=2 et
+  autocmd MyAutoCmd FileType go         setlocal sw=4 sts=4 ts=4 noexpandtab
   autocmd MyAutoCmd FileType diff       setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType html       setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
@@ -64,13 +58,18 @@ if has("autocmd")
   autocmd MyAutoCmd FileType yaml       setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType rst        setlocal sw=3 sts=3 ts=3 et
-  autocmd MyAutoCmd FileType jade       setlocal sw=4 sts=4 ts=4 et
+  autocmd MyAutoCmd FileType pug        setlocal sw=4 sts=4 ts=4 et
 endif
 
-" syntax match Number /-\sA$/
-" syn match BS '\v(cp932)'
-" hi def link BS StorageClass
-" autocmd MyAutoCmd ColorScheme * highlight  pythonCommenc ctermfg=196 cterm=italic
+
+" Golang Setting
+autocmd FileType go :highlight goErr cterm=bold ctermfg=214
+autocmd FileType go :match goErr /\<err\>/
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_build_constraints = 1
+
 
 noremap <Up> <Nop>
 noremap <Down> <Nop>
@@ -94,6 +93,7 @@ set ttimeout
 set timeoutlen=100
 
 " 削除した内容をクリップボードに入れない
+" YankRing以外
 nnoremap x "_x
 nnoremap dd "_dd
 nnoremap ciw "_ciw
@@ -121,10 +121,7 @@ nnoremap 9 :DeleteSpace<CR>
 " 記録モード使わない
 map q <NUL>
 set noundofile          " un~ファイル作らない
-"set tabstop=4
 set autoindent
-"set expandtab
-"set shiftwidth=4
 set smartindent  " 新しい行を開始したときに、新しい行のインデントを現在行と同じ量にする。
 set cindent      " Cプログラムファイルの自動インデントを始める
 set number
@@ -154,14 +151,14 @@ set textwidth=0         " 自動的に改行が入るのを無効化
 set wildmenu            " 補完時の一覧表示機能有効
 set wildignore=*.o,*.obj,*.bak,*.swp,*.d,*~  " ファイル名補完時に無視するファイルパターン
 "120行目から灰色に
-let &colorcolumn=join(range(121,999),",")
+let &colorcolumn=join(range(121,255),",")
 highlight ColorColumn ctermbg=235 guibg=#2c2d27
 
 set t_vb=
 set novisualbell
 set list
-set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
-"set cursorline " カーソルライン表示
+set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+" set cursorline " カーソルライン表示
 
 " クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので
 " 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
@@ -208,9 +205,6 @@ cmap w!! w !sudo tee > /dev/null %
 command! Header call append(0, "# -*- coding: utf-8 -*-")
 nnoremap <Leader>h :Header<CR>
 
-command! CallLogger call s:logger
-nnoremap <Leader>h :Calllogger<CR>
-
 " Python　logger
 function! s:logger(level)
   call append(1, "import logging")
@@ -228,29 +222,13 @@ call neobundle#load_cache()  " キャッシュの読込み
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
+NeoBundle 'ujihisa/neco-look'
+
 NeoBundle 'wanshot/vim-connect-slack'
 
 NeoBundle 'tyru/caw.vim'
 nmap <Leader>c <Plug>(caw:I:toggle)
 vmap <Leader>c <Plug>(caw:I:toggle)
-
-NeoBundle 'easymotion/vim-easymotion'
-let g:EasyMotion_do_mapping = 0
-nmap ; <Plug>(easymotion-s2)
-xmap ; <Plug>(easymotion-s2)
-omap z <Plug>(easymotion-s2)
-let g:EasyMotion_smartcase = 1
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-let g:EasyMotion_startofline = 0
-let g:EasyMotion_keys = 'QAZWSXEDCFGYHNUJMIKOLP'
-let g:EasyMotion_use_upper = 1
-let g:EasyMotion_enter_jump_first = 1
-let g:EasyMotion_space_jump_first = 1
-nmap / <Plug>(easymotion-sn)
-xmap / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-
 
 NeoBundle 'Shougo/vimproc', {
   \ 'build' : {
@@ -304,6 +282,7 @@ inoremap <expr><C-y>  neocomplete#close_popup()
 inoremap <expr><C-e>  neocomplete#cancel_popup()
 inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
+
 " if '' !=# matchstr(expand('%:t'), '\v(test|TEST).*\.py$')
 "   let s:dicts_dir = '/Users/wan/.vim/dicts'
 "   if isdirectory(s:dicts_dir)
@@ -312,13 +291,21 @@ inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 "           \ }
 "   endif
 " endif
+"
 
 NeoBundle "tpope/vim-surround"
 nmap <Leader>" ysiw"
 nmap <Leader>' ysiw'
 
-
-NeoBundle 'vim-scripts/YankRing.vim'
+NeoBundle "LeafCage/yankround.vim"
+nmap p <Plug>(yankround-P)
+xmap p <Plug>(yankround-P)
+nmap P <Plug>(yankround-P)
+nmap gp <Plug>(yankround-gP)
+xmap gp <Plug>(yankround-gP)
+nmap gP <Plug>(yankround-gP)
+nmap <C-p> <Plug>(yankround-prev)
+nmap <C-n> <Plug>(yankround-next)
 
 NeoBundle 'Shougo/vimfiler'
 "セーフモードを無効にした状態で起動する
@@ -345,19 +332,19 @@ NeoBundle 'Shougo/neomru.vim'
 "更新時間表示
 "let g:neomru#time_format = '(%Y/%m/%d %H:%M:%S) '
 "
-NeoBundleLazy 'Shougo/unite-outline', {
-  \ "autoload": {
-  \   "unite_sources": ["outline"],
-  \ }}
+NeoBundle 'Shougo/unite-outline', '', 'same'
 
 nnoremap [unite] <Nop>
 nmap <Leader>u [unite]
 nnoremap <silent> [unite]f :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
-nnoremap <silent> [unite]o :<C-u>Unite outline<CR>
+" nnoremap <silent> [unite]o :<C-u>Unite outline<CR>
 nnoremap <silent> [unite]c :<C-u>Unite bookmark<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
+nnoremap <silent> [unite]y :<C-u>Unite yankround<CR>
+nnoremap <silent> [unite]o :<C-u>Unite -vertical -no-quit outline<CR>
+let g:unite_winwidth = 40
 
 let s:hooks = neobundle#get_hooks("unite.vim")
 function! s:hooks.on_source(bundle)
@@ -412,6 +399,13 @@ let g:indent_guides_color_change_percent = 30
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=234
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=234
 
+let g:indent_guides_exclude_filetypes = [
+ \ 'help',
+ \ 'unite',
+ \ 'vimfiler',
+ \ 'go',
+ \ ]
+
 NeoBundleLazy "miyakogi/vim-virtualenv", {
   \ "autoload": {
   \   "filetypes": ["python", "python3", "djangohtml"]
@@ -450,6 +444,7 @@ if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#force_omni_input_patterns.python = '\h\w*\|[^. \t]\.\w*'
+let g:neocomplete#force_omni_input_patterns.go = '\h\w\.\w*'
 
 NeoBundle 'scrooloose/syntastic'
 let g:syntastic_python_checkers = ["flake8"]
@@ -480,76 +475,19 @@ let g:neocomplete#text_mode_filetypes = {
       \ 'text': 1,
       \ 'help': 1,
       \ 'python': 1,
+      \ 'go': 1,
+      \ 'c': 1,
       \ }
 
 NeoBundle 'wanshot/vim-mercenary'
 
-NeoBundle 'Shougo/neosnippet.vim'
-let g:neosnippet#snippets_directory='~/.vim/snippets'
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: "\<TAB>"
-let g:neosnippet#disable_runtime_snippets = {
-  \   '_' : 1,
-  \ }
-
-NeoBundleLazy 'digitaltoad/vim-jade', {
-    \ 'autoload' : {
-    \     'filetypes' : 'jade',
-    \    },
+NeoBundleLazy 'fatih/vim-go', {
+    \ 'autoload' : { 'filetypes' : 'go'  }
     \ }
 
-NeoBundleLazy 'thinca/vim-ref', {
+NeoBundleLazy 'digitaltoad/vim-pug', {
     \ 'autoload' : {
-    \     'filetypes' : 'haskell',
-    \    },
-    \ }
-
-NeoBundleLazy 'itchyny/vim-haskell-indent', {
-    \ 'autoload' : {
-    \     'filetypes' : 'haskell',
-    \    },
-    \ }
-
-NeoBundleLazy 'eagletmt/ghcmod-vim', {
-    \ 'autoload' : {
-    \     'filetypes' : 'haskell',
-    \    },
-    \ }
-
-" if '' !=# matchstr(expand('%:t'), '\.*\.hs$')
-"   augroup ghcmodcheck
-"     autocmd!
-"     autocmd MyAutoCmd BufWritePost <buffer> GhcModCheckAsync
-"   augroup END
-" endif
-
-
-NeoBundleLazy 'eagletmt/neco-ghc', {
-    \ 'autoload' : {
-    \     'filetypes' : 'haskell',
-    \    },
-    \ }
-let g:haskellmode_completion_ghc = 0
-" 型情報を表示
-let g:necoghc_enable_detailed_browse = 1
-
-NeoBundleLazy 'ujihisa/ref-hoogle', {
-    \ 'autoload' : {
-    \     'filetypes' : 'haskell',
-    \    },
-    \ }
-nnoremap <silent> [unite]h :<C-u>Unite haskellimport<CR>
-
-NeoBundleLazy 'ujihisa/unite-haskellimport', {
-    \ 'autoload' : {
-    \     'filetypes' : 'haskell',
+    \     'filetypes' : 'pug',
     \    },
     \ }
 
@@ -565,6 +503,10 @@ let g:splice_initial_layout_grid = 1
 let g:splice_initial_diff_grid = 1
 let g:splice_initial_scrollbind_grid = 0
 let g:splice_wrap = 'nowrap'
+
+let g:loaded_matchparen = 1
+" 標準のmatchparenを使うのをやめる
+NeoBundle 'itchyny/vim-parenmatch'
 
 colorschem molokai
 " colorschem dracula
@@ -652,17 +594,6 @@ endfunction
 "NeoBundle 'vim-pyprofiler'
 " NeoBundle 'wanshot/vim-bugspots'
 
-
-" NeoBundleLazy 'wanshot/vim-table-builder', {
-"   \ 'autoload': {
-"   \   'commands': ['TableModeToggle'],
-"   \ }}
-" nmap <Leader>tb :TableModeToggle<CR>
-" let g:table_mode_corner_corner="+"
-" let g:table_mode_header_fillchar="="
-
-" NeoBundle 'vim-slack-client'
-
 " if has('persistent_undo')
 "   set undodir=/Users/wan/.vim/undo_history
 "   augroup vimrc-undofile
@@ -678,116 +609,11 @@ endfunction
 " " let g:gundo_auto_preview = 0
 " " 遅いので差分をプレビューしない
 " nnoremap <Leader>z :GundoToggle<CR>
-"vimでag検索 Unite vimを使用する為廃止
-"NeoBundle 'rking/ag.vim'
 " NeoBundle 'vim-gundo-support'
 " let g:UndoFolder="/Users/wan/tmp"
 
 NeoBundleSaveCache  " キャッシュの書込み
 call neobundle#end()
-
-
-" rst csv-table convert
-command! CSV call CsvTableDirective()
-nnoremap csv :CSV<CR>
-
-let s:option_parse = {
-      \"h": "   :header: ",
-      \"w": "   :widths: ",
-      \"c": "   :class: ",
-      \}
-
-
-" function! CsvTableDirective() range
-"   for num in range(a:firstline, a:lastline)
-"     if "" !=# matchstr(getline(num), '\v^csvtable\s*.*')
-"       let end = num + 1
-"       while "" !=# getline(end)
-"         let end += 1
-"       endwhile
-"       let csv_name = matchstr(getline(num), '\v^csvtable\s\zs.*')
-"       if csv_name == ""
-"         let csv_line = ".. csv-table::"
-"       else
-"         let csv_line = ".. csv-table:: " . csv_name
-"       endif
-"       let repl = substitute(getline(num), getline(num), csv_line, "g")
-"       call setline(num, repl)
-"       for n in range(num+1, end)
-"         if "" !=# matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
-"           let opt = matchstr(getline(n), '\v^-\zs\a\ze')
-"           let args = matchstr(getline(n), '\v^-\a\s+\zs.*(,|.)*')
-"           let convert_line = s:option_parse.table_option(opt, args)
-"           call setline(n, convert_line)
-"           let n += 1
-"           if "" == matchstr(getline(n), '\v^-\a\s+\.*(,|.)*')
-"             call append(n-1, "")
-"           endif
-"         endif
-"         if "" !=# matchstr(getline(n+1), '\v^\S+(.|,)*.$')
-"           let line = '   '
-"           let column_list = split(getline(n+1), ",")
-"           for column in column_list
-"             let line = line . '"' . column . '"' . ', '
-"           endfor
-"           let content_line = line[:-3]
-"           call setline(n+1, content_line)
-"         endif
-"       endfor
-"     endif
-"   endfor
-" endfunction
-"
-" function! s:option_parse.table_option(opt, args) dict
-"   let line = eval("self." . a:opt)
-"   let column_list = split(a:args, ",")
-"   for column in column_list
-"     let line = line . column . ', '
-"   endfor
-"   return line[:-3]
-" endfunction
-"
-"
-" "get syntax info
-" "http://cohama.hateblo.jp/entry/2013/08/11/020849
-" function! s:get_syn_id(transparent)
-"   let synid = synID(line("."), col("."), 1)
-"   if a:transparent
-"     return synIDtrans(synid)
-"   else
-"     return synid
-"   endif
-" endfunction
-" function! s:get_syn_attr(synid)
-"   let name = synIDattr(a:synid, "name")
-"   let ctermfg = synIDattr(a:synid, "fg", "cterm")
-"   let ctermbg = synIDattr(a:synid, "bg", "cterm")
-"   let guifg = synIDattr(a:synid, "fg", "gui")
-"   let guibg = synIDattr(a:synid, "bg", "gui")
-"   return {
-"         \ "name": name,
-"         \ "ctermfg": ctermfg,
-"         \ "ctermbg": ctermbg,
-"         \ "guifg": guifg,
-"         \ "guibg": guibg}
-" endfunction
-"
-" function! s:get_syn_info()
-"   let baseSyn = s:get_syn_attr(s:get_syn_id(0))
-"   echo "name: " . baseSyn.name .
-"         \ " ctermfg: " . baseSyn.ctermfg .
-"         \ " ctermbg: " . baseSyn.ctermbg .
-"         \ " guifg: " . baseSyn.guifg .
-"         \ " guibg: " . baseSyn.guibg
-"   let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
-"   echo "link to"
-"   echo "name: " . linkedSyn.name .
-"         \ " ctermfg: " . linkedSyn.ctermfg .
-"         \ " ctermbg: " . linkedSyn.ctermbg .
-"         \ " guifg: " . linkedSyn.guifg .
-"         \ " guibg: " . linkedSyn.guibg
-" endfunction
-" command! SyntaxInfo call s:get_syn_info()
 
 "http://d.hatena.ne.jp/thinca/20090530/1243615055
 "cursorlineを必要な時にだけ有効にする
@@ -820,6 +646,7 @@ augroup vimrc-auto-cursorline
     endif
   endfunction
 augroup END
+
 
 NeoBundleCheck
 

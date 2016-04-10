@@ -122,9 +122,6 @@ setopt ignore_eof
 # '#' 以降をコメントとして扱う
 setopt interactive_comments
 
-# ディレクトリ名だけでcdする
-setopt auto_cd
-
 # cd したら自動的にpushdする
 setopt auto_pushd
 # 重複したディレクトリを追加しない
@@ -234,3 +231,20 @@ function percol_select_directory() {
 zle -N percol_select_directory
 bindkey "^X" percol_select_directory
 
+# Ctrl-Zを使ってVimにスイッチバックする
+fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER="fg"
+    zle accept-line
+  else
+    zle push-input
+    zle clear-screen
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
+
+################## GO ###########################
+
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
