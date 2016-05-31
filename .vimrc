@@ -157,7 +157,8 @@ highlight ColorColumn ctermbg=235 guibg=#2c2d27
 set t_vb=
 set novisualbell
 set list
-set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+" set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%
 " set cursorline " カーソルライン表示
 
 " クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので

@@ -1,4 +1,19 @@
-#export PATH=/usr/local/bin:$PATH
+export PATH=/usr/local/bin:$PATH
+
+
+function powerline_precmd() {
+  export PS1="$(~/.zsh/powerline-shell/powerline-shell.py $? --shell zsh 2> /dev/null)"
+}
+function install_powerline_precmd() {
+  for s in "${precmd_functions[@]}" ; do
+    if [ "$s" = "powerline_precmd" ] ; then
+      return
+    fi
+  done
+  precmd_functions+=(powerline_precmd)
+}
+install_powerline_precmd
+
 
 ### Virtualenvwrapper
 if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
@@ -29,6 +44,9 @@ export PATH=$HOME/.stack/programs/x86_64-osx/ghc-7.10.3/bin:$PATH
 export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/.stack/global-project/.stack-work/install/x86_64-osx/lts-3.20/7.10.2/bin:$PATH
 
+## nodebrew
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
 
 ########################################
 # 環境変数
@@ -53,8 +71,8 @@ SAVEHIST=1000000
 # 色確認
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;ech
 # ^[はVimでinnsertmodeでShift-v,esc
-PROMPT="🍣 %{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
-%# %{[0m%}"
+# PROMPT="🍣 %{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
+# %# %{[0m%}"
 
 
 # 単語の区切り文字を指定する
@@ -87,17 +105,17 @@ zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
 ########################################
 # vcs_info
-autoload -Uz vcs_info
-autoload -Uz add-zsh-hook
+# autoload -Uz vcs_info
+# autoload -Uz add-zsh-hook
 
-zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
-zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+# zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
+# zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
-function _update_vcs_info_msg() {
-    LANG=en_US.UTF-8 vcs_info
-    RPROMPT="${vcs_info_msg_0_}"
-}
-add-zsh-hook precmd _update_vcs_info_msg
+# function _update_vcs_info_msg() {
+#     LANG=en_US.UTF-8 vcs_info
+#     RPROMPT="${vcs_info_msg_0_}"
+# }
+# add-zsh-hook precmd _update_vcs_info_msg
 
 
 ########################################
