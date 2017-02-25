@@ -1,20 +1,5 @@
 export PATH=/usr/local/bin:$PATH
 
-
-function powerline_precmd() {
-  export PS1="$(~/.zsh/powerline-shell/powerline-shell.py $? --shell zsh 2> /dev/null)"
-}
-function install_powerline_precmd() {
-  for s in "${precmd_functions[@]}" ; do
-    if [ "$s" = "powerline_precmd" ] ; then
-      return
-    fi
-  done
-  precmd_functions+=(powerline_precmd)
-}
-install_powerline_precmd
-
-
 ### Virtualenvwrapper
 if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
     export WORKON_HOME=$HOME/.virtualenvs
@@ -71,7 +56,10 @@ SAVEHIST=1000000
 # 色確認
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;ech
 # ^[はVimでinnsertmodeでShift-v,esc
-# PROMPT="🍣 %{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
+PROMPT="%F{green}%1v%f%F{yellow}%2v%f%F{red}%3v%f%{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
+%# %{[0m%}"
+
+# PROMPT="%{$bg[green]%}%1v% %{$bg[yellow]%}%2v% %{$bg[red]%}%3v% %{[38;5;040m%}[wan]%{[0m%}%{[38;5;201m%} %~
 # %# %{[0m%}"
 
 
@@ -105,17 +93,32 @@ zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
 ########################################
 # vcs_info
-# autoload -Uz vcs_info
-# autoload -Uz add-zsh-hook
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
 
-# zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
-# zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+zstyle ':vcs_info:*' formats ' (%s) ⭠ %c%u[%b] ⮀'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b|%a]'
 
-# function _update_vcs_info_msg() {
-#     LANG=en_US.UTF-8 vcs_info
+function _update_vcs_info_msg() {
+    psvar=()
+    LANG=en_US.UTF-8 vcs_info
 #     RPROMPT="${vcs_info_msg_0_}"
-# }
-# add-zsh-hook precmd _update_vcs_info_msg
+    if [[ -z ${vcs_info_msg_0_} ]]; then
+        # vcs_info で何も取得していない場合はプロンプトを表示しない
+        psvar[1]=""
+        psvar[2]=""
+        psvar[3]=""
+    else
+        # vcs_info で情報を取得した場合
+        # $vcs_info_msg_0_ , $vcs_info_msg_1_ , $vcs_info_msg_2_ を
+        # それぞれ緑、黄色、赤で表示する
+        [[ -n "$vcs_info_msg_0_" ]] && psvar[1]=( "${vcs_info_msg_0_}" )
+        [[ -n "$vcs_info_msg_1_" ]] && psvar[2]=( "${vcs_info_msg_1_}" )
+        [[ -n "$vcs_info_msg_2_" ]] && psvar[3]=( "${vcs_info_msg_2_}" )
+    fi
+
+}
+add-zsh-hook precmd _update_vcs_info_msg
 
 
 ########################################

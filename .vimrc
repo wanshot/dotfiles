@@ -1,11 +1,8 @@
-"   ___       __       ________      ________       ________       ___  ___      ________      _________
-"  |\  \     |\  \    |\   __  \    |\   ___  \    |\   ____\     |\  \|\  \    |\   __  \    |\___   ___\
-"  \ \  \    \ \  \   \ \  \|\  \   \ \  \\ \  \   \ \  \___|_    \ \  \\\  \   \ \  \|\  \   \|___ \  \_|
-"   \ \  \  __\ \  \   \ \   __  \   \ \  \\ \  \   \ \_____  \    \ \   __  \   \ \  \\\  \       \ \  \
-"    \ \  \|\__\_\  \   \ \  \ \  \   \ \  \\ \  \   \|____|\  \    \ \  \ \  \   \ \  \\\  \       \ \  \
-"     \ \____________\   \ \__\ \__\   \ \__\\ \__\    ____\_\  \    \ \__\ \__\   \ \_______\       \ \__\
-"      \|____________|    \|__|\|__|    \|__| \|__|   |\_________\    \|__|\|__|    \|_______|        \|__|
-"                                                     \|_________|
+"                             __          __
+"  _      ______ _____  _____/ /_  ____  / /_
+" | | /| / / __ `/ __ \/ ___/ __ \/ __ \/ __/
+" | |/ |/ / /_/ / / / (__  ) / / / /_/ / /_
+" |__/|__/\__,_/_/ /_/____/_/ /_/\____/\__/
 
 set encoding=utf-8
 scriptencoding utf-8
@@ -61,7 +58,6 @@ if has("autocmd")
   autocmd MyAutoCmd FileType pug        setlocal sw=4 sts=4 ts=4 et
 endif
 
-
 " Golang Setting
 autocmd FileType go :highlight goErr cterm=bold ctermfg=214
 autocmd FileType go :match goErr /\<err\>/
@@ -70,13 +66,19 @@ let g:go_highlight_structs = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_build_constraints = 1
 
-
+" 方向キーの無効化
 noremap <Up> <Nop>
 noremap <Down> <Nop>
 noremap <Left> <Nop>
 noremap <Right> <Nop>
 
+" 入力モードでのカーソル移動
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
 
+" リーダーキーをスペースに
 let mapleader = "\<Space>"
 
 " スペースwで上書き保存
@@ -87,13 +89,11 @@ set <xUp>=^[OA
 set <xDown>=^[OB
 set <xRight>=^[OC
 set <xLeft>=^[OD
-
 set notimeout
 set ttimeout
 set timeoutlen=100
 
-" 削除した内容をクリップボードに入れない
-" YankRing以外
+" 削除した内容をクリップボードに入れない(YankRing以外)
 nnoremap x "_x
 nnoremap dd "_dd
 nnoremap ciw "_ciw
@@ -105,11 +105,11 @@ vnoremap ciw "_ciw
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
-"0で改行
+" 0で改行
 command! LineBreak call append(expand('.'), '')j
 nnoremap 0 :LineBreak<CR>
 
-"末尾スペース削除
+" 9で末尾スペース削除
 function! DelleteSpace()
   let pos = getpos(".")
   exe ':%s/\s*$//'
@@ -121,14 +121,14 @@ nnoremap 9 :DeleteSpace<CR>
 " 記録モード使わない
 map q <NUL>
 set noundofile          " un~ファイル作らない
-set autoindent
-set smartindent  " 新しい行を開始したときに、新しい行のインデントを現在行と同じ量にする。
-set cindent      " Cプログラムファイルの自動インデントを始める
-set number
+set autoindent          " 自動でインデントを行う
+set smartindent         " 新しい行を開始したときに、新しい行のインデントを現在行と同じ量にする。
+set cindent             " Cプログラムファイルの自動インデントを始める
+set number              " 行番号表示
 set ignorecase          " 大文字小文字を区別しない
 set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
 set incsearch           " インクリメンタルサーチ
-set hlsearch            " 検索マッチテキストをハイライト (2013-07-03 14:30 修正）
+set hlsearch            " 検索マッチテキストをハイライト
 set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の倍数に丸める
 set infercase           " 補完時に大文字小文字を区別しない
 set virtualedit=all     " カーソルを文字が存在しない部分でも動けるようにする
@@ -150,14 +150,14 @@ set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 set wildmenu            " 補完時の一覧表示機能有効
 set wildignore=*.o,*.obj,*.bak,*.swp,*.d,*~  " ファイル名補完時に無視するファイルパターン
+
 "120行目から灰色に
-let &colorcolumn=join(range(121,255),",")
-highlight ColorColumn ctermbg=235 guibg=#2c2d27
+autocmd FileType python :let &colorcolumn=join(range(121,255),",")
+autocmd FileType python :highlight ColorColumn ctermbg=235 guibg=#2c2d27
 
 set t_vb=
 set novisualbell
 set list
-" set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
 set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%
 " set cursorline " カーソルライン表示
 
@@ -171,7 +171,7 @@ endif
 
 cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
-inoremap jj <Esc>
+inoremap <silent>jj <Esc>
 vnoremap v $h
 nmap <silent> <Esc><Esc> :nohlsearch<CR>
 
@@ -202,16 +202,14 @@ noremap <Leader>l   $
 
 cmap w!! w !sudo tee > /dev/null %
 
-"先頭行にPythonの定型文追加
-command! Header call append(0, "# -*- coding: utf-8 -*-")
-nnoremap <Leader>h :Header<CR>
+command! JsonFormat :execute '%!python -m json.tool'
+ \ | :execute '%!python -c "import re,sys;chr=__builtins__.__dict__.get(\"unichr\", chr);sys.stdout.write(re.sub(r\"\\\\u[0-9a-f]{4}\", lambda x: chr(int(\"0x\" + x.group(0)[2:], 16)).encode(\"utf-8\"), sys.stdin.read()))"'
+ \ | :set ft=javascript
+ \ | :1
 
-" Python　logger
-function! s:logger(level)
-  call append(1, "import logging")
-  call append(2, "logger = logging.getLogger('" . a:level . "')")
-endfunction
-command! -nargs=1 Log call s:logger(<f-args>)
+" 先頭行にPythonの定型文追加
+" command! Header call append(0, "# -*- coding: utf-8 -*-")
+" nnoremap <Leader>h :Header <CR>
 
 filetype off
 
@@ -224,8 +222,6 @@ call neobundle#load_cache()  " キャッシュの読込み
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 NeoBundle 'ujihisa/neco-look'
-
-NeoBundle 'wanshot/vim-connect-slack'
 
 NeoBundle 'tyru/caw.vim'
 nmap <Leader>c <Plug>(caw:I:toggle)
@@ -283,17 +279,6 @@ inoremap <expr><C-y>  neocomplete#close_popup()
 inoremap <expr><C-e>  neocomplete#cancel_popup()
 inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
-
-" if '' !=# matchstr(expand('%:t'), '\v(test|TEST).*\.py$')
-"   let s:dicts_dir = '/Users/wan/.vim/dicts'
-"   if isdirectory(s:dicts_dir)
-"     let g:neocomplete#sources#dictionary#dictionaries = {
-"           \ 'python': s:dicts_dir . '/python.dict',
-"           \ }
-"   endif
-" endif
-"
-
 NeoBundle "tpope/vim-surround"
 nmap <Leader>" ysiw"
 nmap <Leader>' ysiw'
@@ -329,6 +314,7 @@ NeoBundleLazy "Shougo/unite.vim", {
    \   "commands": ["Unite", "UniteWithBufferDir"]
    \ }}
 
+
 NeoBundle 'Shougo/neomru.vim'
 "更新時間表示
 "let g:neomru#time_format = '(%Y/%m/%d %H:%M:%S) '
@@ -340,18 +326,17 @@ nmap <Leader>u [unite]
 nnoremap <silent> [unite]f :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
 nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
-" nnoremap <silent> [unite]o :<C-u>Unite outline<CR>
+nnoremap <silent> [unite]o :<C-u>Unite outline<CR>
 nnoremap <silent> [unite]c :<C-u>Unite bookmark<CR>
 nnoremap <silent> [unite]t :<C-u>Unite tab<CR>
 nnoremap <silent> [unite]y :<C-u>Unite yankround<CR>
-nnoremap <silent> [unite]o :<C-u>Unite -vertical -no-quit outline<CR>
-let g:unite_winwidth = 40
 
 let s:hooks = neobundle#get_hooks("unite.vim")
 function! s:hooks.on_source(bundle)
   " start unite in insert mode
   let g:unite_enable_start_insert = 1
   " use vimfiler to open directory
+  call unite#filters#matcher_default#use("matcher_regexp")
   call unite#custom_default_action("source/bookmark/directory", "vimfiler")
   call unite#custom_default_action("directory", "vimfiler")
   call unite#custom_default_action("directory_mru", "vimfiler")
@@ -447,14 +432,21 @@ endif
 let g:neocomplete#force_omni_input_patterns.python = '\h\w*\|[^. \t]\.\w*'
 let g:neocomplete#force_omni_input_patterns.go = '\h\w\.\w*'
 
-NeoBundle 'scrooloose/syntastic'
-let g:syntastic_python_checkers = ["flake8"]
-let g:syntastic_python_flake8_args="--max-line-length=120"
-
 "インデント整形をPEP8準拠（syntastixではできないので）
 NeoBundleLazy 'hynek/vim-python-pep8-indent', {
   \ "autoload": {"insert": 1, "filetypes": ["python", "python3", "djangohtml"]
   \ }}
+
+NeoBundle 'scrooloose/syntastic'
+let g:syntastic_python_checkers = ["flake8"]
+let g:syntastic_javascript_checkers=['eslint']
+" let g:syntastic_python_flake8_args="--max-line-length=120"
+let g:syntastic_python_flake8_args='--ignore=E501'
+
+
+NeoBundleLazy "mtscout6/syntastic-local-eslint.vim", {
+  \ "autoload": {"filetypes": ["javascript"]}
+  \ }
 
 NeoBundleLazy 'pangloss/vim-javascript', {
   \   'autoload': {'filetypes': ['javascript']}
@@ -463,6 +455,7 @@ NeoBundleLazy 'pangloss/vim-javascript', {
 NeoBundleLazy 'ujihisa/neco-look', {
   \ 'autoload' : { 'insert' : 1,}
   \ }
+
 
 if !exists('g:neocomplete#text_mode_filetypes')
     let g:neocomplete#text_mode_filetypes = {}
@@ -483,19 +476,15 @@ let g:neocomplete#text_mode_filetypes = {
 NeoBundle 'wanshot/vim-mercenary'
 
 NeoBundleLazy 'fatih/vim-go', {
-    \ 'autoload' : { 'filetypes' : 'go'  }
+    \ 'autoload' : { 'filetypes' : 'go'}
     \ }
 
 NeoBundleLazy 'digitaltoad/vim-pug', {
-    \ 'autoload' : {
-    \     'filetypes' : 'pug',
-    \    },
+    \ 'autoload' : {'filetypes' : 'pug'}
     \ }
 
 NeoBundleLazy 'Rip-Rip/clang_complete', {
-    \ 'autoload' : {
-    \     'filetypes' : ['c','cpp'],
-    \    },
+    \ 'autoload' : {'filetypes' : ['c','cpp']}
     \ }
 
 NeoBundle 'sjl/splice.vim'
@@ -591,9 +580,9 @@ function! LightLineMode()
 endfunction
 
 
-"NeoBundle 'vim-scripts/vim-quick-radon'
+NeoBundle 'vim-sqlformat'
 "NeoBundle 'vim-pyprofiler'
-" NeoBundle 'wanshot/vim-bugspots'
+NeoBundle 'vim-connect-slack'
 
 " if has('persistent_undo')
 "   set undodir=/Users/wan/.vim/undo_history
@@ -615,39 +604,6 @@ endfunction
 
 NeoBundleSaveCache  " キャッシュの書込み
 call neobundle#end()
-
-"http://d.hatena.ne.jp/thinca/20090530/1243615055
-"cursorlineを必要な時にだけ有効にする
-augroup vimrc-auto-cursorline
-  autocmd!
-  autocmd MyAutoCmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
-  autocmd MyAutoCmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
-  autocmd MyAutoCmd WinEnter * call s:auto_cursorline('WinEnter')
-  autocmd MyAutoCmd WinLeave * call s:auto_cursorline('WinLeave')
-
-  let s:cursorline_lock = 0
-  function! s:auto_cursorline(event)
-    if a:event ==# 'WinEnter'
-      setlocal cursorline
-      let s:cursorline_lock = 2
-    elseif a:event ==# 'WinLeave'
-      setlocal nocursorline
-    elseif a:event ==# 'CursorMoved'
-      if s:cursorline_lock
-        if 1 < s:cursorline_lock
-          let s:cursorline_lock = 1
-        else
-          setlocal nocursorline
-          let s:cursorline_lock = 0
-        endif
-      endif
-    elseif a:event ==# 'CursorHold'
-      setlocal cursorline
-      let s:cursorline_lock = 1
-    endif
-  endfunction
-augroup END
-
 
 NeoBundleCheck
 

@@ -23,7 +23,8 @@ bn = log --template '{branch}\n'
 mode = ansi
 
 [hooks]
-update = find . -name '*.pyc' -delete
+# update = find . -name '*.pyc' -delete
+update.clean = find . -name \*.pyc -or -name \*.orig -or -name \*.rej | xargs rm -f
 
 [revsetalias]
 p($1) = parents(min(branch($1)))
