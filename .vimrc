@@ -29,6 +29,9 @@ if has("autocmd")
   autocmd MyAutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType htmldjango setlocal sw=2 sts=2 ts=2 et
   autocmd MyAutoCmd FileType python     setlocal sw=4 sts=4 ts=4 et omnifunc=jedi#completions completeopt-=preview
+  " 120行目から灰色に
+  autocmd MyAutoCmd FileType python     :let &colorcolumn=join(range(121,255),",")
+  autocmd MyAutoCmd FileType python     :highlight ColorColumn ctermbg=235 guibg=#2c2d27
   autocmd MyAutoCmd FileType sh         setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType sql        setlocal sw=4 sts=4 ts=4 et
   autocmd MyAutoCmd FileType vim        setlocal sw=2 sts=2 ts=2 et
@@ -118,13 +121,8 @@ set hidden              " バッファを閉じる代わりに隠す（Undo履�
 set switchbuf=useopen   " 新しく開く代わりにすでに開いてあるバッファを開く
 set showmatch           " 対応する括弧などをハイライト表示する
 set matchtime=3         " 対応括弧のハイライト表示を3秒にする
-
-" 対応括弧に'<'と'>'のペアを追加
-set matchpairs& matchpairs+=<:>
-
-" バックスペースでなんでも消せるようにする
-set backspace=indent,eol,start
-
+set matchpairs& matchpairs+=<:> " 対応括弧に'<'と'>'のペアを追加
+set backspace=indent,eol,start  " バックスペースでなんでも消せるようにする
 set nowritebackup
 set nobackup
 set noswapfile
@@ -132,19 +130,11 @@ set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 set wildmenu            " 補完時の一覧表示機能有効
 set wildignore=*.o,*.obj,*.bak,*.swp,*.d,*~  " ファイル名補完時に無視するファイルパターン
-
-"120行目から灰色に
-autocmd FileType python :let &colorcolumn=join(range(121,255),",")
-autocmd FileType python :highlight ColorColumn ctermbg=235 guibg=#2c2d27
-
 set t_vb=
 set novisualbell
 set list
 set listchars=tab:\ \ ,trail:-,extends:»,precedes:«,nbsp:%
-" set cursorline " カーソルライン表示
 
-" クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので
-" 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
 if has('unnamedplus')
     set clipboard& clipboard+=unnamedplus,unnamed
 else
@@ -189,6 +179,9 @@ command! JsonFormat :execute '%!python -m json.tool'
  \ | :set ft=javascript
  \ | :1
 
+command! SQLFormat :execute '%!sqlformat -r -k upper -'
+ \ | :set ft=sql
+ \ | :1
 
 filetype off
 
@@ -359,12 +352,7 @@ let g:indent_guides_color_change_percent = 30
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=234
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=234
 
-let g:indent_guides_exclude_filetypes = [
- \ 'help',
- \ 'unite',
- \ 'vimfiler',
- \ 'go',
- \ ]
+let g:indent_guides_exclude_filetypes = ['help', 'unite', 'vimfiler', 'go']
 
 "---------- davidhalter/jedi-vim ----------"
 autocmd! User jedi-vim call s:jedivim_hook()
@@ -478,8 +466,6 @@ function! LightLineMode()
 endfunction
 
 colorschem molokai
-" colorschem dracula
-"colorscheme flatlandia
 
 filetype plugin indent on
 if filereadable("/home/local/.vimrc")
